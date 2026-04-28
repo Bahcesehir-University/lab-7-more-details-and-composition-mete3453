@@ -1,0 +1,60 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: 'Group A — Point Class '
+      id: group-a-point-class
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: 'Group A — Point Class '
+        setup-command: ''
+        command: make point
+        timeout: 2
+        max-score: 15
+    - name: Group B — Rectangle Dimensions and Area
+      id: group-b-rectangle-dimensions-and-area
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Group B — Rectangle Dimensions and Area
+        setup-command: ''
+        command: make rectangle
+        timeout: 2
+        max-score: 30
+    - name: Group C — friend function isSameSize
+      id: group-c-friend-function-issamesize
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Group C — friend function isSameSize
+        setup-command: ''
+        command: make friend
+        timeout: 2
+        max-score: 20
+    - name: 'Group D — ConstDemo: const correctness'
+      id: group-d-constdemo-const-correctness
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: 'Group D — ConstDemo: const correctness'
+        setup-command: ''
+        command: make constdemo
+        timeout: 2
+        max-score: 35
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        GROUP-A-POINT-CLASS_RESULTS: "${{steps.group-a-point-class.outputs.result}}"
+        GROUP-B-RECTANGLE-DIMENSIONS-AND-AREA_RESULTS: "${{steps.group-b-rectangle-dimensions-and-area.outputs.result}}"
+        GROUP-C-FRIEND-FUNCTION-ISSAMESIZE_RESULTS: "${{steps.group-c-friend-function-issamesize.outputs.result}}"
+        GROUP-D-CONSTDEMO-CONST-CORRECTNESS_RESULTS: "${{steps.group-d-constdemo-const-correctness.outputs.result}}"
+      with:
+        runners: group-a-point-class,group-b-rectangle-dimensions-and-area,group-c-friend-function-issamesize,group-d-constdemo-const-correctness
